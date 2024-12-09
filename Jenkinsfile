@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_URL = "http://<SonarQube_IP>:9000" // Replace with the actual IP/hostname
-        SONARQUBE_TOKEN = credentials('sonarqube-token') // Jenkins Credential ID for SonarQube token
+        SONARQUBE_URL = "http://localhost:9000" // Replace with the actual IP/hostname
+        SONARQUBE_TOKEN = credentials('sonar-token') // Jenkins Credential ID for SonarQube token
     }
 
     stages {
@@ -24,7 +24,7 @@ pipeline {
                 withSonarQubeEnv('SonarQube') { // Use the SonarQube server name configured in Jenkins
                     sh '''
                         mvn sonar:sonar \
-                        -Dsonar.projectKey=demo \
+                        -Dsonar.projectKey=jenkinsproject \
                         -Dsonar.host.url=${SONARQUBE_URL} \
                         -Dsonar.login=${SONARQUBE_TOKEN}
                     '''
