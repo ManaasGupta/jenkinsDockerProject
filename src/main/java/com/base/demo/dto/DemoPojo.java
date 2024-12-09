@@ -11,57 +11,58 @@ import lombok.ToString;
 @NoArgsConstructor
 @Component
 public class DemoPojo {
-	
+
 	private String firstName;
 	private String lastName;
 	private String email;
 	private String requestXML;
 	private String faultResponseJson;
 	private String requestJson;
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
-	
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	public String getLastName() {
 		return lastName;
 	}
-	
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
-	
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public String getRequestXML() {
 		return requestXML;
 	}
-	
+
 	public void setRequestXML(String requestXML) {
 		this.requestXML = requestXML;
 	}
-	
+
 	public String getFaultResponseJson() {
 		return faultResponseJson;
 	}
-	
+
 	public void setFaultResponseJson(String faultResponseJson) {
 		this.faultResponseJson = faultResponseJson;
 	}
+
 	public String getRequestJson() {
 		return requestJson;
 	}
-	
+
 	public void setRequestJson(String requestJson) {
 		this.requestJson = requestJson;
 	}

@@ -42,10 +42,10 @@ public class Validations {
 			demoPojo.setEmail(emailValue);
 
 			if (StringUtils.isAnyEmpty(demoPojo.getFirstName(), demoPojo.getLastName(), demoPojo.getEmail())) {
-				throw new ServiceException("Invalid XML","1000", "Necessary fields null or empty");
+				throw new ServiceException("Invalid XML", "1000", "Necessary fields null or empty");
 			}
 		} catch (SaxonApiException e) {
-			throw new ServiceException( "Wrong Request","400",e.getLocalizedMessage());
+			throw new ServiceException("Wrong Request", "400", e.getLocalizedMessage());
 		}
 	}
 

@@ -21,18 +21,19 @@ import net.sf.saxon.s9api.SaxonApiException;
 @RestController
 @RequestMapping("/api/v1")
 public class DemoController {
-	
+
 	@Autowired
 	private DemoService service;
-	
+
 	private HttpHeaders headers() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		return headers;
 	}
-	
+
 	@PostMapping("/getResponse")
-	public HttpEntity<String> getResponse(@RequestBody String inputXML) throws JsonMappingException, JsonProcessingException, SaxonApiException, ServiceException{
-		return new ResponseEntity<String>(service.getResponse(inputXML),headers(), HttpStatus.OK);
+	public HttpEntity<String> getResponse(@RequestBody String inputXML)
+			throws JsonMappingException, JsonProcessingException, SaxonApiException, ServiceException {
+		return new ResponseEntity<String>(service.getResponse(inputXML), headers(), HttpStatus.OK);
 	}
 }
