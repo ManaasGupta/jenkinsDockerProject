@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         SONARQUBE_URL = "http://sonarqube:9000" // Update with SonarQube container URL
-        SONARQUBE_TOKEN = credentials('sonar-token') // Jenkins Credential ID for SonarQube token
+        SONARQUBE_TOKEN = "squ_84256a89645d3c1eb223f5ea555fd751204ea8e2"// Jenkins Credential ID for SonarQube token
     }
 
     stages {
