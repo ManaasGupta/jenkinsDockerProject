@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        SONARQUBE_URL = "http://localhost:9000" // Update with actual SonarQube URL if needed
+        SONARQUBE_URL = "http://sonarqube:9000" // Update with SonarQube container URL
         SONARQUBE_TOKEN = credentials('sonar-token') // Jenkins Credential ID for SonarQube token
     }
 
@@ -31,23 +31,22 @@ pipeline {
 
         stage('Sonarqube Analysis - SAST') {
             steps {
-                withSonarQubeEnv('SonarQube') { // Use the SonarQube server name configured in Jenkins
-                    sh '''
-                        mvn clean verify sonar:sonar \
-                        -Dsonar.projectKey=jenkinsproject \
-                        -Dsonar.projectName="jenkinsproject" \
-                        -Dsonar.host.url=${SONARQUBE_URL} \
-                        -Dsonar.login=${SONARQUBE_TOKEN}
-                    '''
-                }
+                // Run the SonarQube analysis using Maven directly
+                sh '''
+                    mvn clean verify sonar:sonar \
+                    -Dsonar.projectKey=jenkinsproject \
+                    -Dsonar.projectName="jenkinsproject" \
+                    -Dsonar.host.url=${SONARQUBE_URL} \
+                    -Dsonar.login=${SONARQUBE_TOKEN}
+                '''
             }
         }
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 2, unit: 'MINUTES') { // Adjust timeout as needed
+                timeout(time: 2, unit: 'MINUTES') {
                     script {
-                        def qualityGate = waitForQualityGate() // Waits for the SonarQube analysis result
+                        def qualityGate = waitForQualityGate()
                         if (qualityGate.status != 'OK') {
                             error "Pipeline aborted due to quality gate failure: ${qualityGate.status}"
                         }
