@@ -1,30 +1,41 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven 3.8.6' // Ensure Maven is configured in Jenkins
+    }
+
     environment {
-        SONARQUBE_URL = "http://localhost:9000" // Replace with the actual IP/hostname
+        SONARQUBE_URL = "http://localhost:9000" // Update with actual SonarQube URL if needed
         SONARQUBE_TOKEN = credentials('sonar-token') // Jenkins Credential ID for SonarQube token
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Build Artifact') {
             steps {
-                checkout scm
+                sh 'mvn clean package -DskipTests=true'
+                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
             }
         }
 
-        stage('Build') {
+        stage('Test Maven - JUnit') {
             steps {
-                sh 'mvn clean install'
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Sonarqube Analysis - SAST') {
             steps {
                 withSonarQubeEnv('SonarQube') { // Use the SonarQube server name configured in Jenkins
                     sh '''
-                        mvn sonar:sonar \
+                        mvn clean verify sonar:sonar \
                         -Dsonar.projectKey=jenkinsproject \
+                        -Dsonar.projectName="jenkinsproject" \
                         -Dsonar.host.url=${SONARQUBE_URL} \
                         -Dsonar.login=${SONARQUBE_TOKEN}
                     '''
@@ -34,15 +45,21 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 2, unit: 'MINUTES') { // Adjust timeout as needed
                     script {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        def qualityGate = waitForQualityGate() // Waits for the SonarQube analysis result
+                        if (qualityGate.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qualityGate.status}"
                         }
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completed!"
         }
     }
 }
