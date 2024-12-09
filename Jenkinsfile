@@ -1,36 +1,46 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven 3.8.6' // Ensure Maven is configured in Jenkins
+    environment {
+        SONARQUBE_URL = "http://<SonarQube_IP>:9000" // Replace with the actual IP/hostname
+        SONARQUBE_TOKEN = credentials('sonarqube-token') // Jenkins Credential ID for SonarQube token
     }
 
     stages {
-        stage('Build Artifact') {
+        stage('Checkout Code') {
             steps {
-                sh 'mvn clean package -DskipTests=true'
-                archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+                checkout scm
             }
         }
 
-        stage('Test Maven - JUnit') {
+        stage('Build') {
             steps {
-                sh 'mvn test'
+                sh 'mvn clean install'
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') { // Use the SonarQube server name configured in Jenkins
+                    sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=demo \
+                        -Dsonar.host.url=${SONARQUBE_URL} \
+                        -Dsonar.login=${SONARQUBE_TOKEN}
+                    '''
                 }
             }
         }
 
-        stage('Sonarqube Analysis - SAST') {
+        stage('Quality Gate') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''mvn clean verify sonar:sonar \
-                    -Dsonar.projectKey=jenkinsproject \
-                    -Dsonar.projectName="jenkinsproject" \
-                    -Dsonar.host.url=http://localhost:9000'''
+                timeout(time: 1, unit: 'MINUTES') {
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
                 }
             }
         }
