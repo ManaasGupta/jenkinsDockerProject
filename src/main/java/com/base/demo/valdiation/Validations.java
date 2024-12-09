@@ -21,31 +21,36 @@ import net.sf.saxon.s9api.XdmNode;
 
 @Service
 public class Validations {
-	
+
 	@Autowired
 	private DemoPojo demoPojo;
 
-	public void validateXML(String requestXML) throws SaxonApiException, ServiceException {
-		Processor processor = new Processor(false);
-		XPathCompiler xPathCompilerCompiler = processor.newXPathCompiler();
-		DocumentBuilder builder = processor.newDocumentBuilder();
-		XdmNode docNode = builder.build(new StreamSource(new StringReader(requestXML)));
-		
-		String firstNameValue = getXDMValue(docNode,xPathCompilerCompiler,DemoConstants.FIRSTNAMEXPATH);
-		demoPojo.setFirstName(firstNameValue);
-		
-		String lastNameValue = getXDMValue(docNode,xPathCompilerCompiler,DemoConstants.LASTNAMEXPATH); 
-		demoPojo.setLastName(lastNameValue);
-		
-		String emailValue = getXDMValue(docNode,xPathCompilerCompiler,DemoConstants.EMAILXPATH);
-		demoPojo.setEmail(emailValue);
-		
-		if (StringUtils.isAnyEmpty(demoPojo.getFirstName(),demoPojo.getLastName(),demoPojo.getEmail())) {
-			throw new ServiceException("1000","Invalid XML");
+	public void validateXML(String requestXML) throws ServiceException {
+		try {
+			Processor processor = new Processor(false);
+			XPathCompiler xPathCompilerCompiler = processor.newXPathCompiler();
+			DocumentBuilder builder = processor.newDocumentBuilder();
+			XdmNode docNode = builder.build(new StreamSource(new StringReader(requestXML)));
+
+			String firstNameValue = getXDMValue(docNode, xPathCompilerCompiler, DemoConstants.FIRSTNAMEXPATH);
+			demoPojo.setFirstName(firstNameValue);
+
+			String lastNameValue = getXDMValue(docNode, xPathCompilerCompiler, DemoConstants.LASTNAMEXPATH);
+			demoPojo.setLastName(lastNameValue);
+
+			String emailValue = getXDMValue(docNode, xPathCompilerCompiler, DemoConstants.EMAILXPATH);
+			demoPojo.setEmail(emailValue);
+
+			if (StringUtils.isAnyEmpty(demoPojo.getFirstName(), demoPojo.getLastName(), demoPojo.getEmail())) {
+				throw new ServiceException("Invalid XML","1000", "Necessary fields null or empty");
+			}
+		} catch (SaxonApiException e) {
+			throw new ServiceException( "Wrong Request","400",e.getLocalizedMessage());
 		}
 	}
 
-	private String getXDMValue(XdmNode docNode, XPathCompiler xPathCompilerCompiler, String xpath) throws SaxonApiException {
+	private String getXDMValue(XdmNode docNode, XPathCompiler xPathCompilerCompiler, String xpath)
+			throws SaxonApiException {
 		XPathSelector selector = xPathCompilerCompiler.compile(xpath).load();
 		selector.setContextItem(docNode);
 		return selector.evaluate().toString();

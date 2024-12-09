@@ -16,7 +16,7 @@ public class DemoPojo {
 	private String lastName;
 	private String email;
 	private String requestXML;
-	private String responseXML;
+	private String faultResponseJson;
 	private String requestJson;
 	
 	public String getFirstName() {
@@ -51,12 +51,12 @@ public class DemoPojo {
 		this.requestXML = requestXML;
 	}
 	
-	public String getResponseXML() {
-		return responseXML;
+	public String getFaultResponseJson() {
+		return faultResponseJson;
 	}
 	
-	public void setResponseXML(String responseXML) {
-		this.responseXML = responseXML;
+	public void setFaultResponseJson(String faultResponseJson) {
+		this.faultResponseJson = faultResponseJson;
 	}
 	public String getRequestJson() {
 		return requestJson;

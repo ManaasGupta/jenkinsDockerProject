@@ -1,0 +1,8 @@
+{
+  "ERROR_DESC" : "Necessary fields null or empty",
+  "LASTNAME" : "",
+  "ERROR_TEXT" : "Invalid XML",
+  "FIRSTNAME" : "Manas",
+  "EMAIL" : "manasggpt3@gmail.com",
+  "ERROR_CODE" : "1000"
+}

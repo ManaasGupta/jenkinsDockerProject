@@ -8,6 +8,8 @@ import com.base.demo.exception.ServiceException;
 import com.base.demo.util.Utility;
 import com.base.demo.valdiation.Validations;
 
+import net.sf.saxon.s9api.SaxonApiException;
+
 @Service
 public class DemoService {
 	
@@ -20,15 +22,11 @@ public class DemoService {
 	@Autowired
 	Utility utility;
 
-	public String getResponse(String inputXML) throws ServiceException {
-		try {
+	public String getResponse(String inputXML) throws ServiceException{
 		demoPojo.setRequestXML(inputXML);
 		validation.validateXML(demoPojo.getRequestXML());
-		utility.convertXML2Json(demoPojo.getRequestXML());
+		utility.convertXML2Json();
 		return demoPojo.getRequestJson();
-		}catch (Exception e) {
-			throw new ServiceException("Error Processing Message :"+ demoPojo.getRequestXML(), "400");
-		}
 	}
 
 }
